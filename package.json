@@ -1,0 +1,14 @@
+{
+  "name": "testing-playwright-langchain-agents",
+  "version": "1.0.0",
+  "description": "Regression tests for live URLs using Playwright.",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.47.0",
+    "typescript": "^5.5.4"
+  }
+}
