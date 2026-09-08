@@ -1,0 +1,14 @@
+{
+  "name": "testing-playwright-langchain-agents",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Regression tests for live URLs, authored by the NexAI SDET agent and run in CI.",
+  "scripts": {
+    "test": "playwright test",
+    "test:regression": "playwright test tests/regression",
+    "test:report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.48.0"
+  }
+}
