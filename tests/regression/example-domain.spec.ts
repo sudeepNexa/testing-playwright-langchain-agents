@@ -1,25 +1,24 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Example Domain - Public Content', () => {
+test.describe('Example Domain', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('https://example.com/');
   });
 
-  test('should display the Example Domain heading', async ({ page }) => {
-    const heading = page.locator('heading', { hasText: 'Example Domain' });
+  test('should display the Example Domain heading as h1', async ({ page }) => {
+    const heading = page.getByRole('heading', { level: 1 });
     await expect(heading).toBeVisible();
     await expect(heading).toHaveText('Example Domain');
   });
 
-  test('should display descriptive paragraph about domain usage', async ({ page }) => {
-    const paragraph = page.locator('paragraph').first();
-    await expect(paragraph).toBeVisible();
-    await expect(paragraph).toContainText('This domain is for use in documentation examples');
-    await expect(paragraph).toContainText('Avoid use in operations');
+  test('should display introductory description paragraph', async ({ page }) => {
+    const mainContent = page.locator('body');
+    await expect(mainContent).toContainText('This domain is for use in documentation examples without needing permission');
+    await expect(mainContent).toContainText('Avoid use in operations');
   });
 
-  test('should display Learn more link pointing to IANA', async ({ page }) => {
-    const link = page.locator('a', { hasText: 'Learn more' });
+  test('should display Learn more link with correct href', async ({ page }) => {
+    const link = page.getByRole('link', { name: 'Learn more' });
     await expect(link).toBeVisible();
     await expect(link).toHaveAttribute('href', 'https://iana.org/domains/example');
   });
@@ -28,19 +27,34 @@ test.describe('Example Domain - Public Content', () => {
     await expect(page).toHaveTitle('Example Domain');
   });
 
-  test('should contain all required content elements', async ({ page }) => {
-    // Verify heading
-    const heading = page.locator('heading');
-    await expect(heading).toHaveCount(1);
-    await expect(heading.first()).toHaveText('Example Domain');
+  test('should navigate to IANA example domains when Learn more link is clicked', async ({ page }) => {
+    const link = page.getByRole('link', { name: 'Learn more' });
+    
+    // Create a promise that resolves when navigation completes
+    const navigationPromise = page.waitForNavigation();
+    
+    // Click the link
+    await link.click();
+    
+    // Wait for navigation to complete
+    await navigationPromise;
+    
+    // Verify we navigated to the expected URL
+    expect(page.url()).toContain('iana.org');
+  });
 
-    // Verify descriptive content exists
-    const paragraphs = page.locator('paragraph');
-    await expect(paragraphs.first()).toContainText('This domain is for use in documentation examples');
+  test('should have single h1 heading on page', async ({ page }) => {
+    const headings = page.getByRole('heading', { level: 1 });
+    await expect(headings).toHaveCount(1);
+  });
 
-    // Verify link exists and is accessible
-    const link = page.locator('a', { hasText: 'Learn more' });
-    await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute('href', 'https://iana.org/domains/example');
+  test('should display complete content without layout issues', async ({ page }) => {
+    // Verify the main heading is visible and properly positioned
+    const heading = page.getByRole('heading', { level: 1 });
+    await expect(heading).toBeInViewport();
+    
+    // Verify the Learn more link is in the viewport
+    const link = page.getByRole('link', { name: 'Learn more' });
+    await expect(link).toBeInViewport();
   });
 });
